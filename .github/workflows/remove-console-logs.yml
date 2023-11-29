@@ -27,7 +27,7 @@ jobs:
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v2
         with:
-          find: "console\.log\(([^)]+)\)"
+          find: 'console\.log\(([^)]+)\)'
           replace: ""
           regex: true
       # Runs a single command using the runners shell
