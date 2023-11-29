@@ -28,7 +28,7 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v2
         with:
           find: 'console\.log\(([^)]+)\)'
-          replace: ""
+          replace: ' '
           regex: true
       # Runs a single command using the runners shell
       - name: Run a one-line script
