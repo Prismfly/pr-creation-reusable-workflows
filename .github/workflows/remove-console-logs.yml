@@ -33,4 +33,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
