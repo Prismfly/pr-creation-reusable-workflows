@@ -31,6 +31,8 @@ jobs:
           replace: ' '
           regex: true
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
