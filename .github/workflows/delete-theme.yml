@@ -75,7 +75,7 @@ jobs:
       - name: Delete Two Oldest Themes if More Than Four Exist
         env:
           SHOPIFY_FLAG_STORE: "development-workflow-demo.myshopify.com"
-          SHOPIFY_THEME_NAME: ${{ secrets.SHOPIFY_THEME_NAME }}
+          SHOPIFY_THEME_NAME: "workflows/workflow-theme-delete"
           SHOPIFY_CLI_THEME_TOKEN: "shptka_7fbf0e0da1d752258c639cb592df4f08"
         run: |
           set -e
