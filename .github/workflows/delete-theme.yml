@@ -1,0 +1,118 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run `deno lint` and `deno test`.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Deno
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  tags:
+    if: github.event.pull_request.merged == true
+    name: Create Tag
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Bump and Push Tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ver
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+  deploy:
+    if: github.event.pull_request.merged == true
+    needs: [tags]
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set theme name as env variable"
+        run: |
+          echo "buildname=${{ secrets.SHOPIFY_THEME_NAME }}" >> $GITHUB_OUTPUT
+        id: themename  # this is used on variable path
+      - uses: actions/checkout@master
+        with:
+          ref: ${{ needs.tags.outputs.new_tag }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler: "latest"
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
+      - name: Pull Live Theme Settings including 2.0 json data
+        env:
+          # Store URL, like your-store.myshopify.com
+          SHOPIFY_FLAG_STORE: "${{ secrets.SHOPIFY_STORE }}"
+          # Password generated from Theme Access app
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: | 
+            shopify theme pull --live --only config/settings_data.json --store=${SHOPIFY_FLAG_STORE}
+            shopify theme pull --live --only templates/*.json --store=${SHOPIFY_FLAG_STORE}
+      - name: Delete Two Oldest Themes if More Than Four Exist
+        env:
+          SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_THEME_NAME: ${{ secrets.SHOPIFY_THEME_NAME }}
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: |
+          set -e
+          echo "Fetching list of themes..."
+          ESCAPED_THEME_NAME=$(echo "${SHOPIFY_THEME_NAME}" | sed 's/[.^$*+?()[{\|]/\\&/g')
+          GET_THEMES=$(shopify theme list --role=unpublished --store=${SHOPIFY_FLAG_STORE} | grep -v "DO NOT DELETE" | grep -v "Copy of" | grep "${ESCAPED_THEME_NAME}")
+          # Filter out lines that do not contain SHOPIFY_THEME_NAME
+          echo $GET_THEMES
+
+          echo "Sorting themes by version..."
+          SORTED_THEMES=$(echo "$GET_THEMES" | sort -V)
+          echo $SORTED_THEMES
+
+          # Get the two oldest themes if there are 10 or more themes
+          if [ $(echo "$SORTED_THEMES" | wc -l) -ge 10 ]; then
+          OLDEST_THEMES=$(echo "$SORTED_THEMES" | head -n 2)
+          echo $OLDEST_THEMES
+
+          # Loop through the oldest themes
+          echo "loop through oldest themes"
+            for THEME in $OLDEST_THEMES
+              do
+              # Extract the theme ID
+                THEME_ID=${THEME#*#}
+                # Check if THEME_ID is a number
+                if [[ $THEME_ID =~ ^[0-9]+$ ]]; then
+                  echo THEME_ID
+                  echo "THEME_ID is a number"
+                  # Run the delete command
+                  #shopify theme delete --force -id=$THEME_ID
+                fi
+              done
+          fi
+      - name: Push Theme
+        env:
+          # Store URL, like your-store.myshopify.com
+          SHOPIFY_FLAG_STORE: "${{ secrets.SHOPIFY_STORE }}"
+          # Password generated from Theme Access app
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_TTY: 0
+        run: shopify theme push --unpublished --theme "${{ steps.themename.outputs.buildname }} ${{ needs.tags.outputs.new_tag }}"
