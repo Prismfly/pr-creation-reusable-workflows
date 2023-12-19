@@ -90,7 +90,7 @@ jobs:
           echo $SORTED_THEMES
 
           # Get the two oldest themes if there are 10 or more themes
-          if [ $(echo "$SORTED_THEMES" | wc -l) -ge 10 ]; then
+          if [ $(echo "$SORTED_THEMES" | wc -l) -ge 4 ]; then
           OLDEST_THEMES=$(echo "$SORTED_THEMES" | head -n 2)
           echo $OLDEST_THEMES
 
@@ -118,4 +118,3 @@ jobs:
           SHOPIFY_CLI_TTY: 0
         run: shopify theme push --unpublished --theme "${{ steps.themename.outputs.buildname }} ${{ needs.tags.outputs.new_tag }}"
 
-        
