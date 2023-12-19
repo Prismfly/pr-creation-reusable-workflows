@@ -10,9 +10,9 @@ name: Deno
 
 on:
   push:
-    branches: ["main"]
+    branches: ["workflow-theme-delete"]
   pull_request:
-    branches: ["main"]
+    branches: ["workflow-theme-delete"]
 
 permissions:
   contents: read
@@ -65,17 +65,17 @@ jobs:
       - name: Pull Live Theme Settings including 2.0 json data
         env:
           # Store URL, like your-store.myshopify.com
-          SHOPIFY_FLAG_STORE: "${{ secrets.SHOPIFY_STORE }}"
+          SHOPIFY_FLAG_STORE: "development-workflow-demo.myshopify.com"
           # Password generated from Theme Access app
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_THEME_TOKEN: "shptka_7fbf0e0da1d752258c639cb592df4f08"
         run: | 
             shopify theme pull --live --only config/settings_data.json --store=${SHOPIFY_FLAG_STORE}
             shopify theme pull --live --only templates/*.json --store=${SHOPIFY_FLAG_STORE}
       - name: Delete Two Oldest Themes if More Than Four Exist
         env:
-          SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_FLAG_STORE: "development-workflow-demo.myshopify.com"
           SHOPIFY_THEME_NAME: ${{ secrets.SHOPIFY_THEME_NAME }}
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_THEME_TOKEN: "shptka_7fbf0e0da1d752258c639cb592df4f08"
         run: |
           set -e
           echo "Fetching list of themes..."
