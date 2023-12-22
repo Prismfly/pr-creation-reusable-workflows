@@ -1,4 +1,4 @@
-name: var check
+name: var Check
 
 on:
   pull_request:
@@ -22,3 +22,7 @@ jobs:
         else
           echo "Code is clean. Proceeding with the merge."
         fi
+
+        # Additional diagnostic output
+        echo "Current working directory: $(pwd)"
+        echo "Contents of the directory: $(ls -l)"
