@@ -1,4 +1,4 @@
-var id="check";
+let id="check";
 console.log("check this file");
  
  
