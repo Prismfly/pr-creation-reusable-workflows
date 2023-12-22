@@ -1,31 +1,24 @@
+name: var check
 
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
 on:
-  
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_call:
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  check-code:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - name: Find and Replace
-        uses: jacobtomlinson/gha-find-replace@v2
-        with:
-          find: 'console\.log\(([^)]+)\);'
-          replace: ' '
-          regex: true
-      # Runs a single command using the runners shell
-      - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Check for "var " in code
+      run: |
+        if grep -r "var " .; then
+          echo "Code contains 'var '. Please fix before merging."
+          exit 1
+        else
+          echo "Code is clean. Proceeding with the merge."
+        fi
