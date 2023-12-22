@@ -1,10 +1,13 @@
-name: var check
+# This workflow checks for var occurances in .js files.
+
+name: Check var
 
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
+    branches: ["main"]
+
+permissions:
+  contents: read
 
 jobs:
   check-code:
@@ -14,11 +17,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Check for "var " in code
+    - name: Check for "var" in JavaScript code
       run: |
-        if grep -r "var " .; then
+        if grep -r --include=\*.js  -w -e '\bvar\b' .; then
           echo "Code contains 'var '. Please fix before merging."
           exit 1
         else
-          echo "Code is clean. Proceeding with the merge."
+          echo "JavaScript code is clean. Proceeding with the merge."
         fi
