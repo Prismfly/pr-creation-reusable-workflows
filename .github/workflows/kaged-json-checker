@@ -1,1 +1,40 @@
 
+name: Json checker
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main","master" ]
+  pull_request:
+    branches: [ "main","master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+  
+      - name: Install jq
+        run: sudo apt-get install jq
+  
+      - name: Check JSON file
+        run: |
+          json_file_path="locales/en.default.json"
+          jq_result=$(jq '.gift_cards.issued? | length > 0' "$json_file_path")
+          echo "jq_result: $jq_result"
+          if [ "$jq_result" = "true" ]; then
+            echo "'issued' object is present in 'gift_cards'."
+          else
+            echo "'issued' object is not present in 'gift_cards'."
+            exit 1
+          fi
