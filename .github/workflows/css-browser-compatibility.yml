@@ -1,0 +1,25 @@
+# Check all files ending in .css to see if the CSS is supported by the last 2 versions of all top browsers. "Top browsers" includes all browsers that have at least 5% of the marketshare. Uses CanIUse database.
+name: CSS Browser Compatibility Check
+on:
+  workflow_call:
+
+jobs:
+  css-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install dependencies
+      run: npm install doiuse@latest
+
+    - name: Run doiuse
+      run: find . -name '*.css' -print0 | xargs -0 npx doiuse --browsers "last 2 versions, > 5%"
+
+      
