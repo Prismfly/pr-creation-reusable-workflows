@@ -5,22 +5,9 @@ name: Deployment-CI
 # Controls when the workflow will run
 on:
   
-# Allows you to run this workflow manually from the Actions tab
-workflow_call:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_call:
 
-name: Deployment Workflow
-on:
-  workflow_dispatch:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
-      - master
-      - github-workflow-revision
-    paths-ignore:
-      - ".github/**/*.yml"
-      - ".gitignore"
 jobs:
   tags:
     if: github.event.pull_request.merged == true
