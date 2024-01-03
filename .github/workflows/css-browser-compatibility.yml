@@ -1,4 +1,4 @@
-# Check all files ending in .css to see if the CSS is supported by the last 2 versions of all top browsers. Uses CanIUse database.
+# Check all files ending in .css to see if the CSS is supported by the last 2 versions of all top browsers. "Top browsers" includes all browsers that have at least 5% of the marketshare. Uses CanIUse database.
 name: CSS Browser Compatibility Check
 on:
   workflow_call:
