@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  workflow_call:
+
+jobs:
+  format-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14
+
+      - name: Install Prettier
+        run: npm install --save-dev prettier
+
+      - name: Get changed files
+        id: get_changed_files
+        run: echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+
+      - name: Format code with Prettier
+        run: npx prettier --write "${{ steps.get_changed_files.outputs.files }}"
