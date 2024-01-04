@@ -1,4 +1,4 @@
-name: CI
+name: Code Formatter Prettier
 
 on:
   workflow_call:
