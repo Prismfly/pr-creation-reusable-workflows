@@ -19,9 +19,14 @@ jobs:
       - name: Install Prettier
         run: npm install --save-dev prettier
 
-      - name: Get changed files
-        id: get_changed_files
-        run: echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
-
       - name: Format code with Prettier
-        run: npx prettier --write "${{ steps.get_changed_files.outputs.files }}"
+        run: npx prettier --write .
+
+      - name: Commit formatted code
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
+          git diff --staged --quiet || git commit -m "Format code with Prettier"
+          git push
+    
