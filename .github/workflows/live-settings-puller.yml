@@ -36,7 +36,7 @@ jobs:
           shopify theme pull --live --only config/settings_data.json --store=${SHOPIFY_FLAG_STORE}
           shopify theme pull --live --only templates/*.json --store=${SHOPIFY_FLAG_STORE}
 
-      - name: Push Theme to Main Branch
+      - name: Push Theme to new-drawer Branch
         env:
           SHOPIFY_FLAG_STORE: "${{ secrets.SHOPIFY_STORE }}"
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
@@ -46,4 +46,4 @@ jobs:
           git config user.name "GitHub Actions"
           git add .
           git commit -m "Update live theme settings [skip ci]"
-          git push origin main
+          git push origin new-drawer
