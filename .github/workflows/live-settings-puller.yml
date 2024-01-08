@@ -41,9 +41,4 @@ jobs:
           SHOPIFY_FLAG_STORE: "${{ secrets.SHOPIFY_STORE }}"
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
           SHOPIFY_CLI_TTY: 0
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-          git add .
-          git commit -m "Update live theme settings [skip ci]"
-          git push origin main
+        uses: stefanzweifel/git-auto-commit-action@v4
