@@ -25,7 +25,7 @@ jobs:
           find: 'console\.log\(([^)]+)\);'
           replace: ' '
           regex: true
-      # Runs a single command using the runners shell
-      - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+      # Comment out the line below to disable the git-auto-commit action
+      # - name: Push changes
+      #   uses: stefanzweifel/git-auto-commit-action@v4
 
