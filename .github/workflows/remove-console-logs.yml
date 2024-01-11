@@ -26,6 +26,6 @@ jobs:
           replace: ' '
           regex: true
       # Runs a single command using the runners shell
-      - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+     # - name: Push changes
+     #   uses: stefanzweifel/git-auto-commit-action@v4
 
